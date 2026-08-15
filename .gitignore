@@ -1,0 +1,155 @@
+# =============================================================================
+# Secrets & Environment Variables
+# =============================================================================
+# .env holds sensitive keys (e.g. HF_TOKEN)
+.env
+.env.*
+.env.local
+*.env
+!.env.example
+!.env.template
+secrets/
+*.pem
+*.key
+
+# =============================================================================
+# Virtual Environments & Package Managers
+# =============================================================================
+# uv-managed / standard virtual environments
+.venv/
+venv/
+env/
+ENV/
+.uv_cache/
+
+# =============================================================================
+# Training Outputs, Checkpoints & Adapters
+# =============================================================================
+# Run artifacts, trainer checkpoints, figures, and logs
+outputs/
+outputs_*/
+results/
+runs/
+
+# Fine-tuned LoRA adapters and model checkpoints
+qwen_video_lora*/
+qwen_*_lora*/
+*_lora/
+*_lora_*/
+lora_*/
+checkpoint-*/
+*/checkpoint-*/
+adapter_model/
+merged_model/
+final_model/
+saved_models/
+
+# =============================================================================
+# Weights & Large Model Files
+# =============================================================================
+# Raw weight dumps and serialization formats
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.gguf
+*.engine
+*.h5
+*.msgpack
+*.tflite
+
+# =============================================================================
+# Caches (Unsloth, PyTorch, Triton, Hugging Face, CUDA)
+# =============================================================================
+# Unsloth compiles patched module sources here at import time
+unsloth_compiled_cache/
+
+# Hugging Face, Triton, PyTorch, and CUDA compile caches
+hf_cache/
+.cache/
+.huggingface/
+datasets_cache/
+.triton/
+triton_cache/
+triton_tmp/
+.torch/
+torch_extensions/
+.nv/
+.locks/
+
+# =============================================================================
+# Experiment Tracking & Logs
+# =============================================================================
+# Weights & Biases, TensorBoard, Lightning
+wandb/
+lightning_logs/
+tensorboard/
+*.tfevents.*
+*.log
+*.out
+*.err
+*.trace.json
+*.pt.trace.json
+
+# =============================================================================
+# Python & Build Artifacts
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.dylib
+*.dll
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# =============================================================================
+# Testing, Linting & Type Checking
+# =============================================================================
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pytype/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+
+# =============================================================================
+# Jupyter Notebooks
+# =============================================================================
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+
+# =============================================================================
+# Editors, IDEs & OS
+# =============================================================================
+.vscode/
+.idea/
+.claude/
+.gemini/
+.cursor/
+.windsurf/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

@@ -1,0 +1,32 @@
+[project]
+name = "unsloth-qwen38-vlm-fine-tune"
+version = "0.1.0"
+description = "QLoRA video fine-tuning of Qwen3.8-27B with Unsloth"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    # unsloth caps torch at <2.12, so 2.11.0 is the newest usable release.
+    # torchvision 0.26.0 is the matching pair.
+    "torch==2.11.0",
+    "torchvision==0.26.0",
+    # unsloth caps transformers at <=5.5.0. 5.5.0 already ships the qwen3_5
+    # architecture Qwen3.8-27B uses (Qwen3_5ForConditionalGeneration, hybrid
+    # linear/full attention, MTP heads ignored on load).
+    "transformers==5.5.0",
+    "unsloth==2026.8.18",
+    "unsloth-zoo>=2026.8.12",
+    "trl>=0.18.2,!=0.19.0,<=0.24.0",
+    "bitsandbytes>=0.45.5",
+    "peft>=0.18.0",
+    "accelerate>=0.34.1",
+    "datasets>=3.4.1,<4.4.0",
+    # Video decode backend for unsloth_zoo.vision_utils.
+    "decord==0.6.0",
+    "hf-transfer>=0.1.8",
+]
+
+[tool.uv]
+# xformers publishes wheels linked against one exact torch build; letting the
+# resolver pick a mismatched one makes unsloth's cpp_lib probe throw at import.
+# unsloth runs fine without it (Triton kernels + SDPA), so keep it out.
+override-dependencies = ["xformers; sys_platform == 'never'"]
