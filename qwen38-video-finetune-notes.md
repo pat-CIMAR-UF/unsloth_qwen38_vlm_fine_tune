@@ -201,6 +201,30 @@ Both stages can be separate LoRA adapters over the same 4-bit base — swap adap
 
 ---
 
+## Quantization: 4-bit vs bf16
+
+QLoRA exists to fit a large model on a small card. A 27B model on a 93 GB H100 doesn't need it, so runs 2 and 3 were repeated with the base unquantized — `load_in_4bit=False, load_in_16bit=True`, which unsloth documents as the 16-bit LoRA route (`load_in_4bit` defaults to `True` and must be turned off explicitly; setting more than one of 4/8/16-bit raises).
+
+Scripts: `video_qwen38_bf16_responses_only.py`, `video_qwen38_bf16_no_thinking.py`. The unmasked baseline was skipped — it measures a constant in any precision. `video_qwen38_bf16_baseline.py` exists but was not run.
+
+| | 4-bit | bf16 | delta |
+|---|---|---|---|
+| reserved after load | 20.9 GB | 55.1 GB | +34.2 |
+| peak reserved (masked run) | 25.348 GB | 59.412 GB | +34.1 |
+| peak reserved (no-thinking run) | 25.67 GB | 59.371 GB | +33.7 |
+| training delta (activations + optimizer) | 4.43 GB | 4.30 GB | ~0 |
+| training time, warm cache | 550.4 s | 535.1 s | −2.8 % |
+
+**Memory is the only real difference, and it is entirely resident weights.** The activation and optimizer footprint is unchanged, because compute happens in bf16 either way — 4-bit weights are dequantized on the fly per matmul.
+
+**Speed is a wash.** Comparing warm caches, bf16 came out 2.8 % faster, which is inside run-to-run noise. Beware the cold-cache trap when benchmarking this: unsloth's compiled-cache key includes the quantization mode, so the *first* run at a new precision recompiles. That cost was 96.65 s in the first bf16 step against 40.05 s in the second — a 56.6 s difference that accounts for essentially all of the 58.4 s gap between the two bf16 totals. Comparing a cold run against a warm one produces a confident, wrong answer in either direction.
+
+Behaviour was identical: the bf16 no-thinking run reproduced bare `right` both pre- and post-train, with both guards passing.
+
+**Recommendation for the real task: skip quantization.** With 33 GB free at peak it costs nothing you have, and it removes quantization of the vision tower as a confounding variable — which matters most for fine visual discrimination like whether a gripper actually closed on the fruit.
+
+8-bit (`load_in_8bit=True`) is supported and would land near 34 GB peak, but is usually the least attractive option for training: bitsandbytes' int8 path uses outlier decomposition that tends to run slower than 4-bit NF4 while using twice the memory. Not measured here.
+
 ## Open items
 
 1. **No eval harness exists.** Every result above is one generation on one training clip. Needed: held-out split, batch generation, exact-match parse, confusion matrix, failure recall.
